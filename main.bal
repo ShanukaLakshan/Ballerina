@@ -8,14 +8,16 @@ type User record {|
     readonly int id;
     string name;
     @sql:Column {name: "birth_date"}
-    string birthDate;
+    time:Date birthDate;
     @sql:Column {name: "mobile_number"}
     string mobileNumber;
 |};
 
 type NewUser record {|
     string name;
-    string birthDate;
+    @sql:Column {name: "birth_date"}
+    time:Date birthDate;
+    @sql:Column {name: "mobile_number"}
     string mobileNumber;
 |};
 
@@ -31,7 +33,7 @@ type UserNotFound record {|
 |};
 
 mysql:Client socialMediaDB = check new ("localhost", "root", "root",
-    "social_media_db", 3306
+    "social_media_db_new", 3306
 );
 
 service /social\-media on new http:Listener(9090) {
@@ -42,7 +44,7 @@ service /social\-media on new http:Listener(9090) {
 
     }
 
-    resource function get users/[int id]() returns User|UserNotFound|error {
+    resource function get getUser/[int id]() returns User|UserNotFound|error {
         User|sql:Error user = socialMediaDB->queryRow(`SELECT * FROM users WHERE id = ${id}`);
         if user is sql:NoRowsError {
             UserNotFound uerNotFound = {
@@ -53,7 +55,7 @@ service /social\-media on new http:Listener(9090) {
         return user;
     }
 
-    resource function post users(NewUser newUser) returns http:Created|error {
+    resource function post createUser(NewUser newUser) returns http:Created|error {
         _ = check socialMediaDB->execute(`
         INSERT INTO users (name, birth_date, mobile_number) 
             VALUES (${newUser.name}, ${newUser.birthDate}, ${newUser.mobileNumber});`);
