@@ -34,7 +34,7 @@ type UserNotFound record {|
     ErrorDetails body;
 |};
 
-service /social\-media on new http:Listener(9090) {
+service /test on new http:Listener(9090) {
 
     isolated resource function get users() returns User[]|error {
         mysql:Client isolatedSocialMediaDB = check new ("localhost", "root", "", "iot_project", 3306);
