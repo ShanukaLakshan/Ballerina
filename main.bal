@@ -36,6 +36,11 @@ type UserNotFound record {|
 
 service /test on new http:Listener(9090) {
 
+    // Show hello world message
+    resource function get hello() returns string {
+        return "Hello World!";
+    }
+
     isolated resource function get users() returns User[]|error {
         mysql:Client isolatedSocialMediaDB = check new ("localhost", "root", "", "iot_project", 3306);
         stream<User, sql:Error?> usersStream = isolatedSocialMediaDB->query(`SELECT * FROM users`);
