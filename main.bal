@@ -78,8 +78,6 @@ service /test on new http:Listener(9090) {
         return insertResult;
     }
 
-    
-
     // UPDATE USER BY ID
     isolated resource function put users/[int id](NewUser updatedUser) returns User|UserNotFound|error {
         mysql:Client isolatedSocialMediaDB = check new ("localhost", "root", "", "bal_test", 3306);
@@ -143,4 +141,3 @@ service /test on new http:Listener(9090) {
     }
 
 }
-
