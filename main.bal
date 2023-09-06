@@ -42,14 +42,14 @@ service /test on new http:Listener(9090) {
     }
 
     isolated resource function get users() returns User[]|error {
-        mysql:Client isolatedSocialMediaDB = check new ("localhost", "root", "", "iot_project", 3306);
+        mysql:Client isolatedSocialMediaDB = check new ("localhost", "root", "", "bal_test", 3306);
         stream<User, sql:Error?> usersStream = isolatedSocialMediaDB->query(`SELECT * FROM users`);
         return from var user in usersStream
             select user;
     }
 
     isolated resource function get users/[int id]() returns User|UserNotFound|error {
-        mysql:Client isolatedSocialMediaDB = check new ("localhost", "root", "", "iot_project", 3306);
+        mysql:Client isolatedSocialMediaDB = check new ("localhost", "root", "", "bal_test", 3306);
 
         User|sql:Error user = isolatedSocialMediaDB->queryRow(`SELECT * FROM users WHERE id = ${id}`);
         if user is sql:NoRowsError {
@@ -62,7 +62,7 @@ service /test on new http:Listener(9090) {
     }
 
     isolated resource function post users(NewUser newUser) returns User|sql:Error|error {
-        mysql:Client isolatedSocialMediaDB = check new ("localhost", "root", "", "iot_project", 3306);
+        mysql:Client isolatedSocialMediaDB = check new ("localhost", "root", "", "bal_test", 3306);
         sql:ExecutionResult|sql:Error insertResult = isolatedSocialMediaDB->execute(`
         INSERT INTO users (device_id, connection_id, name, address, email, phone_number)
         VALUES (${newUser.device_id}, ${newUser.connection_id}, ${newUser.name}, ${newUser.address}, ${newUser.email}, ${newUser.phone_number});
@@ -78,9 +78,11 @@ service /test on new http:Listener(9090) {
         return insertResult;
     }
 
+    
+
     // UPDATE USER BY ID
     isolated resource function put users/[int id](NewUser updatedUser) returns User|UserNotFound|error {
-        mysql:Client isolatedSocialMediaDB = check new ("localhost", "root", "", "iot_project", 3306);
+        mysql:Client isolatedSocialMediaDB = check new ("localhost", "root", "", "bal_test", 3306);
 
         // Check if the user exists
         User|sql:Error userBeforeUpdate = isolatedSocialMediaDB->queryRow(`SELECT * FROM users WHERE id = ${id}`);
@@ -112,7 +114,7 @@ service /test on new http:Listener(9090) {
     // DELETE USER BY ID
 
     resource function delete users/[int id]() returns User|UserNotFound|error {
-        mysql:Client isolatedSocialMediaDB = check new ("localhost", "root", "", "iot_project", 3306);
+        mysql:Client isolatedSocialMediaDB = check new ("localhost", "root", "", "bal_test", 3306);
 
         // Check if the user exists
         User|sql:Error userBeforeDelete = isolatedSocialMediaDB->queryRow(`SELECT * FROM users WHERE id = ${id}`);
